@@ -11,7 +11,15 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name }}
+    environment: if [[ "${{ github.ref_name }}" == "dev" ]]; then
+            echo "ENVIRONMENT=development" >> $GITHUB_ENV
+          elif [[ "${{ github.ref_name }}" == "stage" ]]; then
+            echo "ENVIRONMENT=staging" >> $GITHUB_ENV
+          elif [[ "${{ github.ref_name }}" == "prod" ]]; then
+            echo "ENVIRONMENT=production" >> $GITHUB_ENV
+          fi
+
+    
 
     steps:
     - name: Checkout

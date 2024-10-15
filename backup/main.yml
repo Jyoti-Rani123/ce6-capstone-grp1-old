@@ -1,0 +1,162 @@
+# name: Deploy to Amazon ECS
+
+# on:
+#   push:
+#     branches:
+#       - dev
+#       - stage
+#       - prod
+
+# env:            
+#   AWS_REGION: ap-southeast-1 
+
+# jobs:
+#   deploy-dev:
+#     name: Deploy to Development
+#     runs-on: ubuntu-latest
+#     environment: dev
+
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v3
+
+#     - name: Configure AWS credentials
+#       uses: aws-actions/configure-aws-credentials@v1
+#       with:
+#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         aws-region: ${{ env.AWS_REGION }}
+
+#     - name: Login to Amazon ECR
+#       id: login-ecr
+#       uses: aws-actions/amazon-ecr-login@v1
+
+#     - name: Build, tag, and push image to Amazon ECR
+#       id: build-image
+#       env:
+#         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#         IMAGE_TAG: ${{ github.sha }}
+#       run: |
+#         docker build -t $ECR_REGISTRY/dev-ecr-repo:$IMAGE_TAG -t $ECR_REGISTRY/dev-ecr-repo:latest .
+#         docker push $ECR_REGISTRY/dev-ecr-repo -a
+#         echo "image=$ECR_REGISTRY/dev-ecr-repo:$IMAGE_TAG" >> $GITHUB_OUTPUT
+    
+#     - name: Download task definition
+#       run: |
+#         aws ecs describe-task-definition --task-definition dev-task-def --query taskDefinition > task-definition.json
+
+#     - name: Fill in the new image ID in the Amazon ECS task definition
+#       id: task-def
+#       uses: aws-actions/amazon-ecs-render-task-definition@v1
+#       with:
+#         task-definition: task-definition.json
+#         container-name: dev-ecs-container
+#         image: ${{ steps.build-image.outputs.image }}
+
+#     - name: Deploy Amazon ECS task definition
+#       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#       with:
+#         task-definition: ${{ steps.task-def.outputs.task-definition }}
+#         service: dev-service
+#         cluster: dev-cluster
+#         wait-for-service-stability: true
+
+#   deploy-stage:
+#     name: Deploy to Staging
+#     runs-on: ubuntu-latest
+#     environment: stage
+
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v3
+
+#     - name: Configure AWS credentials
+#       uses: aws-actions/configure-aws-credentials@v1
+#       with:
+#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         aws-region: ${{ env.AWS_REGION }}
+
+#     - name: Login to Amazon ECR
+#       id: login-ecr
+#       uses: aws-actions/amazon-ecr-login@v1
+
+#     - name: Build, tag, and push image to Amazon ECR
+#       id: build-image
+#       env:
+#         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#         IMAGE_TAG: ${{ github.sha }}
+#       run: |
+#         docker build -t $ECR_REGISTRY/stage-ecr-repo:$IMAGE_TAG -t $ECR_REGISTRY/stage-ecr-repo:latest .
+#         docker push $ECR_REGISTRY/stage-ecr-repo -a
+#         echo "image=$ECR_REGISTRY/stage-ecr-repo:$IMAGE_TAG" >> $GITHUB_OUTPUT
+    
+#     - name: Download task definition
+#       run: |
+#         aws ecs describe-task-definition --task-definition stage-task-def --query taskDefinition > task-definition.json
+
+#     - name: Fill in the new image ID in the Amazon ECS task definition
+#       id: task-def
+#       uses: aws-actions/amazon-ecs-render-task-definition@v1
+#       with:
+#         task-definition: task-definition.json
+#         container-name: stage-ecs-container
+#         image: ${{ steps.build-image.outputs.image }}
+
+#     - name: Deploy Amazon ECS task definition
+#       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#       with:
+#         task-definition: ${{ steps.task-def.outputs.task-definition }}
+#         service: stage-service
+#         cluster: stage-cluster
+#         wait-for-service-stability: true
+
+#   deploy-prod:
+#     name: Deploy to Production
+#     runs-on: ubuntu-latest
+#     environment: prod
+
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v3
+
+#     - name: Configure AWS credentials
+#       uses: aws-actions/configure-aws-credentials@v1
+#       with:
+#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         aws-region: ${{ env.AWS_REGION }}
+
+#     - name: Login to Amazon ECR
+#       id: login-ecr
+#       uses: aws-actions/amazon-ecr-login@v1
+
+#     - name: Build, tag, and push image to Amazon ECR
+#       id: build-image
+#       env:
+#         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#         IMAGE_TAG: ${{ github.sha }}
+#       run: |
+#         docker build -t $ECR_REGISTRY/prod-ecr-repo:$IMAGE_TAG -t $ECR_REGISTRY/prod-ecr-repo:latest .
+#         docker push $ECR_REGISTRY/prod-ecr-repo -a
+#         echo "image=$ECR_REGISTRY/prod-ecr-repo:$IMAGE_TAG" >> $GITHUB_OUTPUT
+    
+#     - name: Download task definition
+#       run: |
+#         aws ecs describe-task-definition --task-definition prod-task-def --query taskDefinition > task-definition.json
+
+#     - name: Fill in the new image ID in the Amazon ECS task definition
+#       id: task-def
+#       uses: aws-actions/amazon-ecs-render-task-definition@v1
+#       with:
+#         task-definition: task-definition.json
+#         container-name: prod-ecs-container
+#         image: ${{ steps.build-image.outputs.image }}
+
+#     - name: Deploy Amazon ECS task definition
+#       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#       with:
+#         task-definition: ${{ steps.task-def.outputs.task-definition }}
+#         service: prod-service
+#         cluster: prod-cluster
+#         wait-for-service-stability: true

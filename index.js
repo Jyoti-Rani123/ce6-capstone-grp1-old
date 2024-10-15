@@ -19,7 +19,7 @@ const ENV = 'DEV';
 const app = express();
 app.get('/', (req, res) => {
   res.statusCode = 200;
-  const msg = 'Hello from Node 4!';
+  const msg = 'Hello from Node 4! <a href="https://www.w3schools.com/">Visit W3Schools.com!</a>';
   res.send(msg);
 });
 

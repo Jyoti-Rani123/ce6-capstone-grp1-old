@@ -1,33 +1,25 @@
-// before rum
-//npm install express
-
-// to run 
-// npm start
-
 'use strict';
 
-const express = require('express');
+import express from 'express';
 
 // Constants
-const PORT = 8080;
-const HOST = '0.0.0.0';
-const OS = require('os');
-const ENV = 'DEV';
-
+const PORT = process.env.PORT || 8080;
+const HOST = process.env.HOST || '0.0.0.0';
 
 // App
-const app = express();
-app.get('/', (req, res) => {
+const server = express();
+server.get('/', (req, res) => {
   res.statusCode = 200;
-  const msg = 'Hello from Node 4! <a href="https://www.w3schools.com/">Visit W3Schools.com!</a>';
+  const msg = 'Hello, we are from Capstone Project Group 1!';
   res.send(msg);
 });
 
-app.get('/test', (req, res) => {
+server.get('/health', (req, res) => {
   res.statusCode = 200;
-  const msg = 'Hello from /test Node!';
-  res.send(msg);
+  res.send('OK');
 });
 
-app.listen(PORT, HOST);
+server.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
+
+export default server;
